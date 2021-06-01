@@ -17,16 +17,16 @@ export const ListPokemon = () => {
   const [turn, setTurn] = useState(true);
 
   useEffect(async () => {
-    var size = 24;
-    var _pokemons = [];
-    for (var i = 1; i <= size; i++) {
+    const size = 24;
+    let _pokemons = [];
+    for (let i = 1; i <= size; i++) {
       await axios
         .get(`${URL}pokemon/${i}`)
         .then((data) => _pokemons.push(data.data))
         .catch((error) => console.log(error));
     }
     console.log("fetched");
-    var i = 0,
+    let i = 0,
       j = 0;
     while (i == j) {
       i = Math.ceil(Math.random() * size);
@@ -52,9 +52,9 @@ export const ListPokemon = () => {
         </Zoom>
       </h2>
       {!loading &&
-        pokemons.length > 0 &&
-        typeof yourPokemon !== "undefined" &&
-        typeof pcPokemon !== "undefined" ? (
+      pokemons.length > 0 &&
+      typeof yourPokemon !== "undefined" &&
+      typeof pcPokemon !== "undefined" ? (
         <div id="id_container" className="poke-container">
           <div>
             <h2>

@@ -1,4 +1,4 @@
-export const askPcQuestions = [
+export var askPcQuestions = [
   {
     question: "¿Tu pokemon es de tipo :REPLACE:?",
     asked: false,
@@ -16,7 +16,7 @@ export const askPcQuestions = [
   },
 ];
 
-export const possibleAnswers = {
+export var possibleAnswers = {
   0: {
     possibleAnswers: [
       "fuego",
@@ -50,8 +50,8 @@ export const possibleAnswers = {
   2: { possibleAnswers: [] },
 };
 
-export const getPossibleAnswer = (i, pokemons = null) => {
-  var res = null;
+export const getPossibleAnswer = (i, pokemons) => {
+  console.log("???", possibleAnswers);
   if (i === 2) {
     const arrayPossibleAnswers = pokemons
       .filter((pokemon) => pokemon.pcEnabled)
@@ -64,10 +64,9 @@ export const getPossibleAnswer = (i, pokemons = null) => {
   } else {
     const array = possibleAnswers[i].possibleAnswers;
     const j = Math.floor(Math.random() * array.length);
-    res = array[j];
-    array.slice(j, 1);
+    possibleAnswers[i].possibleAnswers.slice(j, 1);
+    return array[j];
   }
-  return res;
 };
 
 export const pokemonsDB = {
@@ -98,7 +97,7 @@ export const pokemonsDB = {
     naranja: [4, 6],
     cafe: [16, 17, 18, 20, 21, 22, 13],
     azul: [7, 8, 9],
-    amarillo: [16, 17, 18, 20, 14, 4, 6],
+    amarillo: [16, 17, 18, 20, 14, 4, 6, 15],
     morado: [23, 24, 12, 19],
   },
   synonymous: {

@@ -10,35 +10,31 @@ const customPokeball = {
 };
 
 export const Board = ({ pokemons, isYours }) => {
-  const children = pokemons.map((pokemon) => {
-    var content = null;
-    if (isYours)
-      content = (
-        <CardPokemon
-          key={pokemon.id}
-          name={pokemon.name}
-          type={pokemon.types[0].type.name}
-          image={pokemon.sprites.front_default}
-          enabled={pokemon.yourEnabled}
-          idx={pokemon.id}
-        />
-      );
-    else
-      content = (
-        <CardPokemon
-          key={pokemon.id}
-          name=" "
-          type=""
-          image={customPokeball[Math.round(Math.random() * 4)]}
-          enabled={pokemon.pcEnabled}
-          idx={pokemon.id}
-        />
-      );
-    return content;
-  });
   return (
     <div id="id_container" className="poke-container">
-      {children}
+      {pokemons.map((pokemon) =>
+        isYours ? (
+          (content = (
+            <CardPokemon
+              key={pokemon.id}
+              name={pokemon.name}
+              type={pokemon.types[0].type.name}
+              image={pokemon.sprites.front_default}
+              enabled={pokemon.yourEnabled}
+              idx={pokemon.id}
+            />
+          ))
+        ) : (
+          <CardPokemon
+            key={pokemon.id}
+            name=" "
+            type=""
+            image={customPokeball[Math.round(Math.random() * 4)]}
+            enabled={pokemon.pcEnabled}
+            idx={pokemon.id}
+          />
+        )
+      )}
     </div>
   );
 };

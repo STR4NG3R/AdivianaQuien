@@ -35,8 +35,7 @@ export const Question = ({
   };
 
   const handleGame = () => {
-    var res = null;
-    res = think(text, pokemons, setPokemons, true, players[0]);
+    let res = think(text, pokemons, setPokemons, true, players[0]);
 
     setCorrectAnswer(res.isThePokemon);
     if (res.status === 201 && res.isThePokemon) {
@@ -44,13 +43,13 @@ export const Question = ({
       return;
     }
 
-    var i = 0;
+    let i = 0;
     do {
       i = Math.floor(Math.random() * askPcQuestions.length);
     } while (askPcQuestions[i].asked);
 
     askPcQuestions[i].countIntents++;
-    var question = askPcQuestions[i].question.replace(
+    let question = askPcQuestions[i].question.replace(
       ":REPLACE:",
       getPossibleAnswer(i, pokemons)
     );
