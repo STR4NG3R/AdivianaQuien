@@ -17,7 +17,7 @@ export const ListPokemon = () => {
   const [turn, setTurn] = useState(true);
 
   useEffect(async () => {
-    const size = 24;
+    const size = 35;
     let _pokemons = [];
     for (let i = 1; i <= size; i++) {
       await axios

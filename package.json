@@ -12,6 +12,7 @@
     "howler": "^2.2.1",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
+    "react-modal": "^3.14.3",
     "react-responsive-carousel": "^3.2.18",
     "react-reveal": "^1.2.2",
     "use-sound": "^3.0.1"
