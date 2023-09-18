@@ -1,58 +1,42 @@
-export var askPcQuestions = [
+export let askPcQuestions = [
   {
     question: "¿Tu pokemon es de tipo :REPLACE:?",
-    asked: false,
-    countIntents: 0,
+    possibleAnswersFk: 0,
   },
   {
     question: "¿Tu pokemon es color :REPLACE:?",
-    asked: false,
-    countIntents: 0,
+    possibleAnswersFk: 1,
   },
   {
     question: "¿Tu pokemon es :REPLACE:?",
-    asked: false,
-    countIntents: 0,
+    possibleAnswersFk: 2,
   },
 ];
 
-export var possibleAnswers = {
-  0: {
-    possibleAnswers: [
-      "fuego",
-      "planta",
-      "electrico",
-      "agua",
-      "veneno",
-      "insecto",
-      "volador",
-      "normal",
-      // "fantasma",
-      // "dragon",
-      // "psiquico",
-      // "pelea",
-      // "tierra",
-      // "roca",
-      // "hada",
-    ],
-  },
-  1: {
-    possibleAnswers: [
-      "rojo",
-      "azul",
-      "naranja",
-      "morado",
-      "amarillo",
-      "verde",
-      "cafe",
-    ],
-  },
-  2: { possibleAnswers: [] },
-};
+export let possibleAnswers = [
+  [
+    "fuego",
+    "planta",
+    // "electrico",
+    "agua",
+    // "veneno",
+    "insecto",
+    // "volador",
+    // "normal",
+    // "fantasma",
+    // "dragon",
+    // "psiquico",
+    // "pelea",
+    // "tierra",
+    // "roca",
+    // "hada",
+  ],
+  ["rojo", "azul", "naranja", "morado", "amarillo", "verde", "cafe"],
+  [],
+];
 
 export const getPossibleAnswer = (i, pokemons) => {
-  console.log("???", possibleAnswers);
-  if (i === 2) {
+  if (askPcQuestions.length == 1) {
     const arrayPossibleAnswers = pokemons
       .filter((pokemon) => pokemon.pcEnabled)
       .map((pokemon) => pokemon.id);
@@ -62,10 +46,11 @@ export const getPossibleAnswer = (i, pokemons) => {
       ];
     return pokemons.find((pokemon) => pokemon.id === pokemonId).name;
   } else {
-    const array = possibleAnswers[i].possibleAnswers;
-    const j = Math.floor(Math.random() * array.length);
-    possibleAnswers[i].possibleAnswers.slice(j, 1);
-    return array[j];
+    const element = possibleAnswers[askPcQuestions[0].possibleAnswersFk];
+    const j = Math.floor(Math.random() * element.length);
+    const res = element[j];
+    element.splice(j, 1);
+    return res;
   }
 };
 
@@ -163,58 +148,49 @@ export const pokemonsDB = {
 
 export const think = (text, pokemons, setPokemons, turn, player) => {
   var tokens = text.split(/[\W||\s]+/);
-  console.log("Player-------", player);
   return filterPokemons(tokens, pokemons, setPokemons, turn, player);
 };
 
 const filterPokemons = (tokens, pokemons, setPokemons, turn, player) => {
-  var result = { status: 203, isThePokemon: false };
+  let correctAnswer = false,
+    isThePokemon = false;
   tokens.forEach((token) => {
     token = token.toLowerCase();
     const lookUp = pokemonsDB.synonymous[token];
-    if (typeof lookUp !== "undefined") {
-      const tokenMeaning = { lexeme: token, grameme: lookUp };
-      switch (tokenMeaning.grameme) {
-        case 10:
-          result = filterPokemonByColor(
-            pokemons,
-            setPokemons,
-            tokenMeaning.lexeme,
-            turn,
-            player
-          );
-          break;
-        case 30:
-          const type = pokemonsDB["types"][tokenMeaning.lexeme];
-          result = filterPokemonByType(
-            pokemons,
-            setPokemons,
-            type,
-            turn,
-            player
-          );
-          break;
-        default:
-          var isThePokemon = false,
-            pokemonId = tokenMeaning.grameme - 100;
-          isThePokemon = player.id === pokemonId;
-          if (!isThePokemon) {
-            setPokemons(
-              pokemons.map((pokemon) => {
-                if (pokemon.id === pokemonId) filterPokemon(turn, pokemon);
-                return pokemon;
-              })
-            );
-          }
 
-          if (isThePokemon) {
-            result = { isThePokemon, status: 201 };
-          }
-          break;
-      }
+    if (!lookUp) return;
+
+    if (lookUp == 10)
+      correctAnswer = filterPokemonByColor(
+        pokemons,
+        setPokemons,
+        token,
+        turn,
+        player
+      );
+    else if (lookUp == 30) {
+      const type = pokemonsDB["types"][token];
+      correctAnswer = filterPokemonByType(
+        pokemons,
+        setPokemons,
+        type,
+        turn,
+        player
+      );
+    } else if (lookUp > 100) {
+      let pokemonId = lookUp - 100;
+      isThePokemon = player.id === pokemonId;
+
+      if (!isThePokemon)
+        setPokemons(
+          pokemons.map((pokemon) => {
+            if (player.id == pokemonId) filterPokemon(turn, pokemon);
+            return pokemon;
+          })
+        );
     }
   });
-  return result;
+  return { isThePokemon, correctAnswer };
 };
 
 const filterPokemon = (turn, pokemon) => {
@@ -246,7 +222,7 @@ export const filterPokemonByType = (
         return pokemon;
       })
     );
-  return { status: 200, isThePokemon };
+  return isThePokemon;
 };
 
 export const filterPokemonByColor = (
@@ -273,5 +249,5 @@ export const filterPokemonByColor = (
         return pokemon;
       })
     );
-  return { status: 200, isThePokemon };
+  return isThePokemon;
 };

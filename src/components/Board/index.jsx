@@ -14,19 +14,17 @@ export const Board = ({ pokemons, isYours }) => {
     <div id="id_container" className="poke-container">
       {pokemons.map((pokemon) =>
         isYours ? (
-          (content = (
-            <CardPokemon
-              key={pokemon.id}
-              name={pokemon.name}
-              type={pokemon.types[0].type.name}
-              image={pokemon.sprites.front_default}
-              enabled={pokemon.yourEnabled}
-              idx={pokemon.id}
-            />
-          ))
-        ) : (
           <CardPokemon
             key={pokemon.id}
+            name={pokemon.name}
+            type={pokemon.types[0].type.name}
+            image={pokemon.sprites.front_default}
+            enabled={pokemon.yourEnabled}
+            idx={pokemon.id}
+          />
+        ) : (
+          <CardPokemon
+            key={pokemon.id + "pc"}
             name=" "
             type=""
             image={customPokeball[Math.round(Math.random() * 4)]}

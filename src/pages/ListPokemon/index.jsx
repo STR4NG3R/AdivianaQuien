@@ -8,7 +8,7 @@ import { Board } from "../../components/Board";
 import { Question } from "../../components/Question";
 import Zoom from "react-reveal/Zoom";
 
-export const ListPokemon = () => {
+export const ListPokemon = ({ think, getPossibleAnswer, askPcQuestions }) => {
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [yourPokemon, setYourPokemon] = useState({});
@@ -16,33 +16,39 @@ export const ListPokemon = () => {
   const [open, setOpen] = useState(false);
   const [turn, setTurn] = useState(true);
 
-  useEffect(async () => {
-    const size = 35;
-    let _pokemons = [];
-    for (let i = 1; i <= size; i++) {
-      await axios
-        .get(`${URL}pokemon/${i}`)
-        .then((data) => _pokemons.push(data.data))
-        .catch((error) => console.log(error));
-    }
-    console.log("fetched");
-    let i = 0,
-      j = 0;
-    while (i == j) {
-      i = Math.ceil(Math.random() * size);
-      j = Math.ceil(Math.random() * size);
-    }
-    setYourPokemon(_pokemons[i]);
-    setPcPokemon(_pokemons[j]);
-    setLoading(false);
-    setPokemons(
-      _pokemons.map((pokemon) => {
-        pokemon.pcEnabled = true;
-        pokemon.yourEnabled = true;
-        return pokemon;
+  useEffect(() => {
+    const size = 10;
+    let promises = [];
+
+    for (let i = 1; i <= size; i++)
+      promises.push(axios.get(`${URL}pokemon/${i}`));
+
+    Promise.all(promises)
+      .then((res) => {
+        let _pokemons = res.map((e) => {
+          return {
+            ...e.data,
+            pcEnabled: true,
+            yourEnabled: true,
+          };
+        });
+
+        let i = 0,
+          j = 0;
+        while (i == j) {
+          i = Math.ceil(Math.random() * size);
+          j = Math.ceil(Math.random() * size);
+        }
+        setYourPokemon(_pokemons[i]);
+        setPcPokemon(_pokemons[j]);
+        setPokemons(_pokemons);
       })
-    );
+      .then((_res) => {
+        setLoading(false);
+      });
   }, []);
+
+  console.log(pokemons)
 
   return (
     <>
@@ -51,10 +57,7 @@ export const ListPokemon = () => {
           Adivina Quien
         </Zoom>
       </h2>
-      {!loading &&
-      pokemons.length > 0 &&
-      typeof yourPokemon !== "undefined" &&
-      typeof pcPokemon !== "undefined" ? (
+      {!loading && yourPokemon && pcPokemon &&  (
         <div id="id_container" className="poke-container">
           <div>
             <h2>
@@ -71,7 +74,6 @@ export const ListPokemon = () => {
               idx={yourPokemon.id}
             />
           </div>
-
           <div>
             <h2>
               <Zoom opposite cascade collapse>
@@ -88,7 +90,7 @@ export const ListPokemon = () => {
             />
           </div>
         </div>
-      ) : null}
+      )}
 
       <div id="id_container" className="poke-container">
         {!loading && pokemons.length > 0 ? (
@@ -101,9 +103,13 @@ export const ListPokemon = () => {
               setPokemons={setPokemons}
               pokemons={pokemons}
               players={[pcPokemon, yourPokemon]}
+              think={think}
+              getPossibleAnswer={getPossibleAnswer}
+              askPcQuestions={askPcQuestions}
             />
             <Carousel
               autoPlay={false}
+              showThumbs={false}
               emulateTouch={true}
               interval={100000}
               statusFormatter={(_currentItem, _total) => ""}

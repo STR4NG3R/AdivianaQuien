@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import { Button, Grid, TextField } from "@material-ui/core";
 import Zoom from "react-reveal/Zoom";
-import { askPcQuestions, getPossibleAnswer, think } from "../../db/dataBase";
 
 const customStyles = {
   content: {
@@ -25,6 +24,9 @@ export const Question = ({
   setPokemons,
   pokemons,
   players,
+  think,
+  getPossibleAnswer,
+  askPcQuestions,
 }) => {
   const [text, setText] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState(true);
@@ -35,32 +37,29 @@ export const Question = ({
   };
 
   const handleGame = () => {
-    let res = think(text, pokemons, setPokemons, true, players[0]);
+    const questionPlayer = think(text, pokemons, setPokemons, true, players[0]);
 
-    setCorrectAnswer(res.isThePokemon);
-    if (res.status === 201 && res.isThePokemon) {
+    setCorrectAnswer(questionPlayer.isThePokemon);
+    if (questionPlayer.isThePokemon) {
       alert("Has ganado!");
       return;
     }
 
-    let i = 0;
-    do {
-      i = Math.floor(Math.random() * askPcQuestions.length);
-    } while (askPcQuestions[i].asked);
-
-    askPcQuestions[i].countIntents++;
-    let question = askPcQuestions[i].question.replace(
+    let question = askPcQuestions[0].question.replace(
       ":REPLACE:",
-      getPossibleAnswer(i, pokemons)
+      getPossibleAnswer(0, pokemons)
     );
     setText(question);
-    res = think(question, pokemons, setPokemons, false, players[1]);
+    const questionPc = think(
+      question,
+      pokemons,
+      setPokemons,
+      false,
+      players[1]
+    );
+    if (questionPc.correctAnswer) askPcQuestions.shift();
+    if (questionPc.isThePokemon) alert("La computadora ah ganado!");
     setTurn(false);
-    if (res.isThePokemonn) askPcQuestions[i].asked = true;
-    if (res.status === 201) {
-      alert("La computadora ah ganado!");
-      return;
-    }
   };
 
   return (

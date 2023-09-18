@@ -17,12 +17,16 @@ let colors = {
   fighting: "#E6E0D4",
   normal: "#F5F5F5",
   ghost: "#AC6ACD",
+  ice: "#5fc2c0",
+  rock: "#b3732b",
+  dark: "lightgray",
+  steel: "#b0aeae",
 };
 
 export const CardPokemon = ({ name, type, idx, image, enabled }) => {
-  var name = name[0].toUpperCase() + name.slice(1);
-  var className = "pokemon";
-  if (!enabled) className += " disabled";
+  name = name[0].toUpperCase() + name.slice(1);
+  let className = "pokemon"
+  if (!enabled) className += " disabled"
   return (
     <Zoom>
       <div
